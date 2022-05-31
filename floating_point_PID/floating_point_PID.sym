@@ -1,0 +1,123 @@
+000     @SCRATCH
+001     @SCRATCH
+001     _RETURN_
+002     @SCRATCH
+003     @SCRATCH
+004     @INTERRUPT_AREA
+005     @INTERRUPT_AREA
+006     @INTERRUPT_AREA
+007     @INTERRUPT_AREA
+008     @INTERRUPT_AREA
+009     @INTERRUPT_AREA
+00A     @INTERRUPT_AREA
+00B     @INTERRUPT_AREA
+00C     @INTERRUPT_AREA
+00D     @INTERRUPT_AREA
+00E     @INTERRUPT_AREA
+00F     @INTERRUPT_AREA
+010     @INTERRUPT_AREA
+011     @INTERRUPT_AREA
+012     @INTERRUPT_AREA
+013     @INTERRUPT_AREA
+014     @INTERRUPT_AREA
+015     @INTERRUPT_AREA
+016     @INTERRUPT_AREA
+017     @INTERRUPT_AREA
+018     @INTERRUPT_AREA
+019     memAddress
+01A     PID
+01B-01E y
+01F-022 ref
+023-026 u
+027-02E error
+02F-032 derivative
+033-036 proportional
+037-03A integrative
+03B-03E Kp
+03F-042 Ki
+043-046 Kd
+047-04A Ts
+04B-04E @SFTOI.P1
+04B-04C @ITOF.P2
+04B     timer0_interrupt.@SCRATCH1
+04C     timer0_interrupt.@SCRATCH2
+04D     timer0_interrupt.@SCRATCH3
+04E     timer0_interrupt.@SCRATCH4
+04F-052 @DIVFF.P1
+04F-052 @ADDFF.P2
+04F-052 @MULFF.P3
+053-056 @ADDFF.P1
+053-056 @MULFF.P2
+053-056 @DIVFF.P3
+057     @ADDFF.@SCRATCH1
+057     @MULFF.@SCRATCH1
+057     @DIVFF.@SCRATCH1
+058     @ADDFF.@SCRATCH2
+058     @MULFF.@SCRATCH2
+058     @DIVFF.@SCRATCH2
+059     @ADDFF.@SCRATCH3
+059     @MULFF.@SCRATCH3
+059     @DIVFF.@SCRATCH3
+05A     @ADDFF.@SCRATCH4
+05A     @DIVFF.@SCRATCH4
+05B     @ADDFF.@SCRATCH5
+05B     @DIVFF.@SCRATCH5
+05C     @ADDFF.@SCRATCH6
+05C     @DIVFF.@SCRATCH6
+05D     @ADDFF.@SCRATCH7
+05E     @ADDFF.@SCRATCH8
+FBE     CCP_1_LOW
+FBE     CCP_1
+FBF     CCP_1_HIGH
+FE1-FE2 @READ_PACKED_MEMORY.P1
+FE1-FE2 @WRITE_PACKED_MEMORY.P2
+FE9-FEA @WRITE_PROGRAM_MEMORY.P1
+FE9-FEA @READ_PROGRAM_MEMORY.P2
+FE9-FEA @WRITE_PACKED_MEMORY.P3
+FE9-FEA @READ_PACKED_MEMORY.P4
+FF6-FF8 @READ_PROGRAM_MEMORY.P1
+FF6-FF8 @WRITE_PROGRAM_MEMORY.P2
+
+ROM Allocation:
+05D6  timer0_interrupt
+00AE  @ITOF
+00E4  @ADDFF
+034E  @MULFF
+0440  @DIVFF
+059C  @SFTOI
+0896  MAIN
+0896  @cinit
+
+
+User Memory space: 
+
+User Memory space: 
+
+Project Directory:
+    d:\iff\eca\2021.2\microcontroladores e microprocessadores\p1\floating_point_pid\
+
+Project Files:
+    floating_point_PID.c
+    C:\Program Files (x86)\PICC\devices\18F1220.h
+
+Units:
+    d:\iff\eca\2021.2\microcontroladores e microprocessadores\p1\floating_point_pid\floating_point_PID (main)
+
+Compiler Settings:
+    Processor:      PIC18F1220
+    Pointer Size:   16
+    ADC Range:      0-255
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    Errors:      floating_point_pid.err
+    Ext Symbols: floating_point_PID.esym
+    INHX32:      floating_point_PID.hex
+    Symbols:     floating_point_PID.sym
+    List:        floating_point_PID.lst
+    Debug/COFF:  floating_point_PID.cof
+    Project:     floating_point_PID.PJT
+    Call Tree:   floating_point_PID.tre
+    Statistics:  floating_point_PID.sta

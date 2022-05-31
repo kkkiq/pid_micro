@@ -1,0 +1,17 @@
+읕2021
+   쳐MAIN  0/192  Ram=0
+   �  읕??0??
+   읕timer0_interrupt  0/704  Ram=4
+      쳐@ITOF  0/54  Ram=2
+      쳐@ITOF  0/54  Ram=2
+      쳐@ADDFF  0/618  Ram=16
+      쳐@MULFF  0/242  Ram=11
+      쳐@MULFF  0/242  Ram=11
+      쳐@ADDFF  0/618  Ram=16
+      쳐@ADDFF  0/618  Ram=16
+      쳐@DIVFF  0/348  Ram=14
+      쳐@MULFF  0/242  Ram=11
+      쳐@MULFF  0/242  Ram=11
+      쳐@ADDFF  0/618  Ram=16
+      쳐@ADDFF  0/618  Ram=16
+      읕@SFTOI  0/58  Ram=4

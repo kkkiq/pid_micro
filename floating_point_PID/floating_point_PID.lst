@@ -1,0 +1,468 @@
+CCS PCH C Compiler, Version 4.114, 93460303               24-mai-22 00:27
+
+               Filename: d:\iff\eca\2021.2\microcontroladores e microprocessadores\p1\floating_point_pid\floating_point_PID.lst
+
+               ROM used: 2386 bytes (58%)
+                         Largest free fragment is 1706
+               RAM used: 75 (29%) at main() level
+                         95 (37%) worst case
+               Stack:    2 worst case (0 in main + 2 for interrupts)
+
+*
+0000:  GOTO   0896
+*
+0008:  MOVWF  04
+000A:  MOVFF  FD8,05
+000E:  MOVFF  FE0,06
+0012:  MOVLB  0
+0014:  MOVFF  FE9,0C
+0018:  MOVFF  FEA,07
+001C:  MOVFF  FE1,08
+0020:  MOVFF  FE2,09
+0024:  MOVFF  FD9,0A
+0028:  MOVFF  FDA,0B
+002C:  MOVFF  FF3,12
+0030:  MOVFF  FF4,13
+0034:  MOVFF  FFA,14
+0038:  MOVFF  FF5,15
+003C:  MOVFF  FF6,16
+0040:  MOVFF  FF7,17
+0044:  MOVFF  00,0E
+0048:  MOVFF  01,0F
+004C:  MOVFF  02,10
+0050:  MOVFF  03,11
+0054:  BTFSS  FF2.5
+0056:  GOTO   0060
+005A:  BTFSC  FF2.2
+005C:  GOTO   05D6
+0060:  MOVFF  0E,00
+0064:  MOVFF  0F,01
+0068:  MOVFF  10,02
+006C:  MOVFF  11,03
+0070:  MOVFF  0C,FE9
+0074:  MOVFF  07,FEA
+0078:  BSF    07.7
+007A:  MOVFF  08,FE1
+007E:  MOVFF  09,FE2
+0082:  MOVFF  0A,FD9
+0086:  MOVFF  0B,FDA
+008A:  MOVFF  12,FF3
+008E:  MOVFF  13,FF4
+0092:  MOVFF  14,FFA
+0096:  MOVFF  15,FF5
+009A:  MOVFF  16,FF6
+009E:  MOVFF  17,FF7
+00A2:  MOVF   04,W
+00A4:  MOVFF  06,FE0
+00A8:  MOVFF  05,FD8
+00AC:  RETFIE 0
+.................... /* INSTITUTO FEDERAL FLUMINENSE - CAMPOS CENTRO (2021.2): 25/05/2022 
+....................    ENGENHARIA DE CONTROLE E AUTOMAÇÃO: MICROPROCESSADORES E MICROCONTROLADORES 
+....................    Prof.: ALEXANDRE LEITE 
+....................    Aluno: KAIQUE GUIMARÃES CERQUEIRA 
+....................    P1: IMPLEMENTAÇÃO DO PID COM ARITMÉTICA DE PONTO FLUTUANTE 
+.................... */ 
+....................  
+.................... #include <18F1220.h> 
+.................... //////// Standard Header file for the PIC18F1220 device //////////////// 
+.................... #device PIC18F1220 
+.................... #list 
+....................  
+.................... #fuses INTRC_IO,NOWDT,NOPROTECT,NOLVP,NOMCLR,NOBROWNOUT 
+.................... #use delay(clock=8000000) 
+....................  
+.................... //////////////////////////////////////////////////////////////////////////////// 
+....................  
+.................... /*========================== Definir variáveis globais =======================*/ 
+.................... int8 memAddress=0; 
+.................... signed int8 PID = 0; 
+.................... float y = 0, ref = 0, u = 0; 
+.................... float error[2]; 
+.................... float derivative = 0, proportional = 0, integrative = 0; 
+.................... float Kp = 2; 
+.................... float Ki = 0.25; 
+.................... float Kd = 0.125; 
+.................... float Ts = 0.03125; // Ou 31.25ms: usando bit-shifting, move-se 5 bits 
+....................  
+.................... /*============================= INTERRUPT DO PID =============================*/  
+.................... #int_timer0  
+.................... void timer0_interrupt() { 
+....................    // SQUARE WAVE TEST 
+....................    output_bit(PIN_B0, 1); 
+05D6:  BSF    F8A.0
+05D8:  BCF    F93.0
+....................     
+....................    // Aquisition profiling: 124 us (both channels) 
+....................    set_adc_channel(0); 
+05DA:  MOVLW  00
+05DC:  MOVWF  01
+05DE:  MOVF   FC2,W
+05E0:  ANDLW  E3
+05E2:  IORWF  01,W
+05E4:  MOVWF  FC2
+....................    delay_us(10); 
+05E6:  MOVLW  06
+05E8:  MOVWF  00
+05EA:  DECFSZ 00,F
+05EC:  BRA    05EA
+05EE:  NOP   
+....................    ref = read_adc(); 
+05F0:  BSF    FC2.1
+05F2:  BTFSC  FC2.1
+05F4:  BRA    05F2
+05F6:  MOVF   FC4,W
+05F8:  CLRF   4C
+05FA:  MOVWF  4B
+05FC:  RCALL  00AE
+05FE:  MOVFF  03,22
+0602:  MOVFF  02,21
+0606:  MOVFF  01,20
+060A:  MOVFF  00,1F
+....................    set_adc_channel(1); 
+060E:  MOVLW  04
+0610:  MOVWF  01
+0612:  MOVF   FC2,W
+0614:  ANDLW  E3
+0616:  IORWF  01,W
+0618:  MOVWF  FC2
+....................    delay_us(10); 
+061A:  MOVLW  06
+061C:  MOVWF  00
+061E:  DECFSZ 00,F
+0620:  BRA    061E
+0622:  NOP   
+....................    y = read_adc(); 
+0624:  BSF    FC2.1
+0626:  BTFSC  FC2.1
+0628:  BRA    0626
+062A:  MOVF   FC4,W
+062C:  CLRF   4C
+062E:  MOVWF  4B
+0630:  RCALL  00AE
+0632:  MOVFF  03,1E
+0636:  MOVFF  02,1D
+063A:  MOVFF  01,1C
+063E:  MOVFF  00,1B
+....................     
+....................    // Computing PID profiling: 240 us 
+....................    error[1] = error[0]; 
+0642:  MOVFF  2A,2E
+0646:  MOVFF  29,2D
+064A:  MOVFF  28,2C
+064E:  MOVFF  27,2B
+....................    error[0] = ref - y; 
+0652:  BSF    FD8.1
+0654:  MOVFF  22,52
+0658:  MOVFF  21,51
+065C:  MOVFF  20,50
+0660:  MOVFF  1F,4F
+0664:  MOVFF  1E,56
+0668:  MOVFF  1D,55
+066C:  MOVFF  1C,54
+0670:  MOVFF  1B,53
+0674:  RCALL  00E4
+0676:  MOVFF  03,2A
+067A:  MOVFF  02,29
+067E:  MOVFF  01,28
+0682:  MOVFF  00,27
+....................    // Ts será um submúltiplo de 2 
+....................    integrative += (error[1] * Ts) * Ki; 
+0686:  MOVFF  2E,52
+068A:  MOVFF  2D,51
+068E:  MOVFF  2C,50
+0692:  MOVFF  2B,4F
+0696:  MOVFF  4A,56
+069A:  MOVFF  49,55
+069E:  MOVFF  48,54
+06A2:  MOVFF  47,53
+06A6:  RCALL  034E
+06A8:  MOVFF  00,4B
+06AC:  MOVFF  01,4C
+06B0:  MOVFF  02,4D
+06B4:  MOVFF  03,4E
+06B8:  MOVFF  03,52
+06BC:  MOVFF  02,51
+06C0:  MOVFF  01,50
+06C4:  MOVFF  00,4F
+06C8:  MOVFF  42,56
+06CC:  MOVFF  41,55
+06D0:  MOVFF  40,54
+06D4:  MOVFF  3F,53
+06D8:  RCALL  034E
+06DA:  BCF    FD8.1
+06DC:  MOVFF  3A,52
+06E0:  MOVFF  39,51
+06E4:  MOVFF  38,50
+06E8:  MOVFF  37,4F
+06EC:  MOVFF  03,56
+06F0:  MOVFF  02,55
+06F4:  MOVFF  01,54
+06F8:  MOVFF  00,53
+06FC:  RCALL  00E4
+06FE:  MOVFF  03,3A
+0702:  MOVFF  02,39
+0706:  MOVFF  01,38
+070A:  MOVFF  00,37
+....................    derivative = ((error[0] - error[1]) / Ts) * Kd; 
+070E:  BSF    FD8.1
+0710:  MOVFF  2A,52
+0714:  MOVFF  29,51
+0718:  MOVFF  28,50
+071C:  MOVFF  27,4F
+0720:  MOVFF  2E,56
+0724:  MOVFF  2D,55
+0728:  MOVFF  2C,54
+072C:  MOVFF  2B,53
+0730:  RCALL  00E4
+0732:  MOVFF  00,4B
+0736:  MOVFF  01,4C
+073A:  MOVFF  02,4D
+073E:  MOVFF  03,4E
+0742:  MOVFF  03,52
+0746:  MOVFF  02,51
+074A:  MOVFF  01,50
+074E:  MOVFF  00,4F
+0752:  MOVFF  4A,56
+0756:  MOVFF  49,55
+075A:  MOVFF  48,54
+075E:  MOVFF  47,53
+0762:  BRA    0440
+0764:  MOVFF  00,4B
+0768:  MOVFF  01,4C
+076C:  MOVFF  02,4D
+0770:  MOVFF  03,4E
+0774:  MOVFF  03,52
+0778:  MOVFF  02,51
+077C:  MOVFF  01,50
+0780:  MOVFF  00,4F
+0784:  MOVFF  46,56
+0788:  MOVFF  45,55
+078C:  MOVFF  44,54
+0790:  MOVFF  43,53
+0794:  RCALL  034E
+0796:  MOVFF  03,32
+079A:  MOVFF  02,31
+079E:  MOVFF  01,30
+07A2:  MOVFF  00,2F
+....................    proportional = error[0] * Kp; 
+07A6:  MOVFF  2A,52
+07AA:  MOVFF  29,51
+07AE:  MOVFF  28,50
+07B2:  MOVFF  27,4F
+07B6:  MOVFF  3E,56
+07BA:  MOVFF  3D,55
+07BE:  MOVFF  3C,54
+07C2:  MOVFF  3B,53
+07C6:  RCALL  034E
+07C8:  MOVFF  03,36
+07CC:  MOVFF  02,35
+07D0:  MOVFF  01,34
+07D4:  MOVFF  00,33
+....................    u = integrative + derivative + proportional; 
+07D8:  BCF    FD8.1
+07DA:  MOVFF  3A,52
+07DE:  MOVFF  39,51
+07E2:  MOVFF  38,50
+07E6:  MOVFF  37,4F
+07EA:  MOVFF  32,56
+07EE:  MOVFF  31,55
+07F2:  MOVFF  30,54
+07F6:  MOVFF  2F,53
+07FA:  RCALL  00E4
+07FC:  MOVFF  00,4B
+0800:  MOVFF  01,4C
+0804:  MOVFF  02,4D
+0808:  MOVFF  03,4E
+080C:  BCF    FD8.1
+080E:  MOVFF  03,52
+0812:  MOVFF  02,51
+0816:  MOVFF  01,50
+081A:  MOVFF  00,4F
+081E:  MOVFF  36,56
+0822:  MOVFF  35,55
+0826:  MOVFF  34,54
+082A:  MOVFF  33,53
+082E:  RCALL  00E4
+0830:  MOVFF  03,26
+0834:  MOVFF  02,25
+0838:  MOVFF  01,24
+083C:  MOVFF  00,23
+....................     
+....................    // Write EPROM profiling: 10 ms 
+....................    PID = (int8) u; 
+0840:  MOVFF  26,4E
+0844:  MOVFF  25,4D
+0848:  MOVFF  24,4C
+084C:  MOVFF  23,4B
+0850:  BRA    059C
+0852:  MOVFF  01,1A
+....................    write_eeprom(memAddress,PID); 
+0856:  MOVFF  19,FA9
+085A:  MOVFF  1A,FA8
+085E:  BCF    FA6.6
+0860:  BCF    FA6.7
+0862:  BSF    FA6.2
+0864:  MOVF   FF2,W
+0866:  MOVWF  00
+0868:  BCF    FF2.7
+086A:  MOVLB  F
+086C:  MOVLW  55
+086E:  MOVWF  FA7
+0870:  MOVLW  AA
+0872:  MOVWF  FA7
+0874:  BSF    FA6.1
+0876:  BTFSC  FA6.1
+0878:  BRA    0876
+087A:  BCF    FA6.2
+087C:  MOVF   00,W
+087E:  IORWF  FF2,F
+....................    memAddress++; 
+0880:  INCF   19,F
+....................     
+....................    set_timer0(64535);            // 0.001s 
+0882:  MOVLW  FC
+0884:  MOVWF  FD7
+0886:  MOVLW  17
+0888:  MOVWF  FD6
+....................    output_bit(PIN_B0, 0); 
+088A:  BCF    F8A.0
+088C:  BCF    F93.0
+.................... } // USANDO A DIRETIVA int_timer0, O COMPILADOR CUIDA DE LIMPAR A FLAG 
+....................  
+....................  
+088E:  BCF    FF2.2
+0890:  MOVLB  0
+0892:  GOTO   0060
+.................... void main() { 
+0896:  CLRF   FF8
+0898:  BCF    FD0.7
+089A:  BSF    07.7
+089C:  CLRF   FEA
+089E:  CLRF   FE9
+08A0:  MOVLW  72
+08A2:  MOVWF  FD3
+08A4:  MOVF   FD3,W
+08A6:  CLRF   19
+08A8:  CLRF   1A
+08AA:  CLRF   1E
+08AC:  CLRF   1D
+08AE:  CLRF   1C
+08B0:  CLRF   1B
+08B2:  CLRF   22
+08B4:  CLRF   21
+08B6:  CLRF   20
+08B8:  CLRF   1F
+08BA:  CLRF   26
+08BC:  CLRF   25
+08BE:  CLRF   24
+08C0:  CLRF   23
+08C2:  CLRF   32
+08C4:  CLRF   31
+08C6:  CLRF   30
+08C8:  CLRF   2F
+08CA:  CLRF   36
+08CC:  CLRF   35
+08CE:  CLRF   34
+08D0:  CLRF   33
+08D2:  CLRF   3A
+08D4:  CLRF   39
+08D6:  CLRF   38
+08D8:  CLRF   37
+08DA:  CLRF   3E
+08DC:  CLRF   3D
+08DE:  CLRF   3C
+08E0:  MOVLW  80
+08E2:  MOVWF  3B
+08E4:  CLRF   42
+08E6:  CLRF   41
+08E8:  CLRF   40
+08EA:  MOVLW  7D
+08EC:  MOVWF  3F
+08EE:  CLRF   46
+08F0:  CLRF   45
+08F2:  CLRF   44
+08F4:  MOVLW  7C
+08F6:  MOVWF  43
+08F8:  CLRF   4A
+08FA:  CLRF   49
+08FC:  CLRF   48
+08FE:  MOVLW  7A
+0900:  MOVWF  47
+0902:  BCF    FC2.6
+0904:  BCF    FC2.7
+0906:  MOVF   FC1,W
+0908:  ANDLW  80
+090A:  IORLW  7F
+090C:  MOVWF  FC1
+....................     
+....................    /*=================== Configurar dois canais do ADC =======================*/ 
+....................    setup_adc(  ADC_CLOCK_INTERNAL  ); 
+090E:  MOVF   FC0,W
+0910:  ANDLW  C0
+0912:  IORLW  07
+0914:  MOVWF  FC0
+0916:  BCF    FC0.7
+0918:  BSF    FC2.0
+....................    setup_adc_ports( sAN0 | sAN1 ); 
+091A:  BCF    FC2.6
+091C:  BCF    FC2.7
+091E:  MOVF   FC1,W
+0920:  ANDLW  80
+0922:  IORLW  7C
+0924:  MOVWF  FC1
+....................    set_adc_channel(0); 
+0926:  MOVLW  00
+0928:  MOVWF  01
+092A:  MOVF   FC2,W
+092C:  ANDLW  E3
+092E:  IORWF  01,W
+0930:  MOVWF  FC2
+....................    delay_us( 10 ); 
+0932:  MOVLW  06
+0934:  MOVWF  00
+0936:  DECFSZ 00,F
+0938:  BRA    0936
+093A:  NOP   
+....................    read_adc(ADC_START_ONLY); 
+093C:  BSF    FC2.1
+....................     
+....................    /*========================== Configurar timer =============================*/ 
+....................     
+....................    // INTERNAL CLOCK SOURCE(8MHz), PRESCALER 1:2 VALUE: 1uS PER INCREMENT(1MHz) 
+....................    setup_timer_0( T0_INTERNAL | T0_DIV_2 ); 
+093E:  MOVLW  80
+0940:  MOVWF  FD5
+....................    // INITIALIZE TIMER0 CLOCK (WITH DEFINED VALUE)REDO CALC 
+....................    // 16-BIT TIMER: COUNT FROM 0 TO 65535 
+....................    // 8 MHz CLOCK, 1:8 PRESCALER, SET TIMER0 TO OVERFLOW IN 1ms 
+....................    set_timer0(64535);         // 65535 - (0.001 / ((4/8000000) * 2)) 
+0942:  MOVLW  FC
+0944:  MOVWF  FD7
+0946:  MOVLW  17
+0948:  MOVWF  FD6
+....................     
+....................    /*======================== TIMER0 como Interrupt ==========================*/ 
+....................    clear_interrupt( INT_TIMER0 );   // PULL DOWN TIMER0 INTERRUPT FLAG 
+094A:  BCF    FF2.2
+....................    enable_interrupts( GLOBAL );     // ENABLES GLOBAL INTERRUPTS 
+094C:  MOVLW  C0
+094E:  IORWF  FF2,F
+....................    enable_interrupts( INT_TIMER0 ); // ENABLES TIMER0 OVERFLOW INTERRUPT 
+0950:  BSF    FF2.5
+....................     
+....................    while (1) 
+....................    { 
+....................       // While vazio 
+....................    } 
+0952:  BRA    0952
+.................... } 
+0954:  SLEEP 
+
+Configuration Fuses:
+   Word  1: C800   INTRC_IO FCMEN IESO
+   Word  2: 1E0C   PUT NOBROWNOUT NOWDT WDT32768
+   Word  3: 0000   NOMCLR
+   Word  4: 0081   STVREN NOLVP NODEBUG
+   Word  5: C003   NOPROTECT NOCPB NOCPD
+   Word  6: E003   NOWRT NOWRTC NOWRTB NOWRTD
+   Word  7: 4003   NOEBTR NOEBTRB

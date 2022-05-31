@@ -1,0 +1,45 @@
+
+ROM used: 622 (15%)
+          622 (15%) including unused fragments
+
+          1 Average locations per line
+          21 Average locations per statement
+
+RAM used: 47 (18%) at main() level
+          49 (19%) worst case
+
+Stack used: 1 worst case (out of 31 total available)
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   87    30 100  fixed_point_PID.c
+  344     0   0  C:\Program Files (x86)\PICC\devices\18F1220.h
+----- -----
+  431    30 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0    308  25   2   739  5.3  timer0_interrupt
+0    144  12   0   245  2.3  MAIN
+
+Program metrics:
+    Functions               2
+    Statements              30
+    Comments                125
+    Volume (V)              1134
+    Difficilty (D)          7.6
+    Effort to implement (E) 8632
+    Time to implement (T)   8 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   1
+    Maintainability (MI)    78
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00002     4  0  
+00004-00006     0  4  
+00008-000AC   166  0  
+000AE-00FFE   452  3470  
+
+
+

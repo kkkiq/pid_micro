@@ -1,0 +1,25 @@
+[PROJECT]
+Target=D:\IFF\ECA\2021.2\Microcontroladores e Microprocessadores\P1\floating_point_PID\floating_point_PID.hex
+Development_Mode=
+Processor_Text=PIC18F1220
+ToolSuite=CCS
+Processor=0xA122
+[D:\IFF\ECA\2021.2\Microcontroladores e Microprocessadores\P1\floating_point_PID\floating_point_PID]
+Type=4
+Path=
+FileList=
+BuildTool=
+OptionString=
+AdditionalOptionString=
+[mru-list]
+1=D:\IFF\ECA\2021.2\Microcontroladores e Microprocessadores\P1\floating_point_PID\floating_point_PID.c
+[Windows]
+0=0000 %S 0 0 796 451 3 0
+[Units]
+Link=0
+Count=1
+1=D:\IFF\ECA\2021.2\Microcontroladores e Microprocessadores\P1\floating_point_PID\floating_point_PID
+[Opened Files]
+1=..\floating_point_PID\floating_point_PID.c
+2=C:\Program Files (x86)\PICC\devices\18F1220.h
+3=
